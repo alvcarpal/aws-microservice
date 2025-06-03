@@ -24,7 +24,7 @@ paths:
       summary: Enrich the albums with all the photos and return that information.
       description: "Enrich the information by obtaining all the albums and their corresponding photos via API, 
       enhancing this data through an algorithm. The result is returned by retrieving all the user's albums with 
-      their respective photos."
+      their respective photos. Additional information"
       operationId: getEnrichmentAlbums
       parameters:
         - $ref: '#/components/parameters/X-B3-TraceId'
