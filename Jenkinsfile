@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         TAG = sh(returnStdout: true, script: 'date "+%d%m%Y-%H%M%S"').trim()
-        DOCKER_IMAGE = 'paupulpeg/microservice-app'
+        DOCKER_IMAGE = 'Paula1670/microservice-app'
     }
 
     stages {
@@ -36,7 +36,7 @@ pipeline {
 
         stage('Publish') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'credenciales_dockerhub', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'paula', passwordVariable: '12345')]) {
                     sh """
                     echo "Logging in to Docker Hub..."
                     docker login -u="${USERNAME}" -p="${PASSWORD}"
