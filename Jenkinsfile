@@ -1,40 +1,65 @@
 pipeline {
-    agent {
-        docker {
-            image 'maven:3.8.6-openjdk-21-slim' // Maven + JDK 21
-            args '-v /var/run/docker.sock:/var/run/docker.sock' // para usar Docker desde dentro del contenedor
-        }
-    }
+    agent any
+
     environment {
+        TAG = sh(returnStdout: true, script: 'date "+%d%m%Y-%H%M%S"').trim()
         DOCKER_IMAGE = 'paupulpeg/microservice-app'
     }
+
     stages {
-        stage('Build JAR') {
+        stage("Clone Git Repository") {
             steps {
-                sh 'mvn clean package'
+                git(
+                    url: "https://github.com/alvcarpal/aws-microservice.git",
+                    branch: "main",
+                    changelog: true,
+                    poll: true
+                )
             }
         }
-        stage('Build Docker Image') {
+
+        stage('Build') {
             steps {
-                script {
-                    TAG = sh(script: 'date "+%d%m%Y-%H%M%S"', returnStdout: true).trim()
-                    docker.build("${DOCKER_IMAGE}:${TAG}")
-                    docker.image("${DOCKER_IMAGE}:${TAG}").tag('latest')
+                sh """
+                echo "Building Docker image..."
+                docker build -t ${DOCKER_IMAGE}:${TAG} .
+                docker tag ${DOCKER_IMAGE}:${TAG} ${DOCKER_IMAGE}:latest
+                """
+            }
+        }
+
+        stage('Test') {
+            steps {
+                echo 'Testing... (agrega aquí tus tests)'
+            }
+        }
+
+        stage('Publish') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'credenciales_dockerhub', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                    sh """
+                    echo "Logging in to Docker Hub..."
+                    docker login -u="${USERNAME}" -p="${PASSWORD}"
+                    echo "Pushing images..."
+                    docker push ${DOCKER_IMAGE}:${TAG}
+                    docker push ${DOCKER_IMAGE}:latest
+                    """
                 }
             }
         }
-        stage('Push Docker Image') {
+
+        stage('Clean') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                    sh "docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD"
-                    sh "docker push ${DOCKER_IMAGE}:${TAG}"
-                    sh "docker push ${DOCKER_IMAGE}:latest"
-                }
+                sh """
+                echo "Cleaning up local images..."
+                docker rmi ${DOCKER_IMAGE}:${TAG} ${DOCKER_IMAGE}:latest || true
+                """
             }
         }
-        stage('Cleanup') {
+
+        stage('Deploy') {
             steps {
-                sh "docker image rm ${DOCKER_IMAGE}:${TAG} ${DOCKER_IMAGE}:latest || true"
+                echo 'Deploying... (agrega aquí tu lógica de despliegue)'
             }
         }
     }
