@@ -13,7 +13,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Album {
   private Integer id;
-  private String author;
   private Integer userId;
   private String title;
   private List<Photo> photos = new ArrayList<>();
