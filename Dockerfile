@@ -1,5 +1,12 @@
-FROM eclipse-temurin:21-jdk
-VOLUME /tmp
-COPY target/*.jar app.jar
-EXPOSE 8080
-ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "/app.jar"]
+# Stage 1: build jar with maven
+FROM maven:3.8.6-openjdk-21-slim AS build
+WORKDIR /app
+COPY pom.xml .
+COPY src ./src
+RUN mvn clean install -DskipTests
+
+# Stage 2: create final image
+FROM openjdk:21-jdk-slim
+WORKDIR /app
+COPY --from=build /app/target/*.jar app.jar
+ENTRYPOINT ["java", "-jar", "app.jar"]

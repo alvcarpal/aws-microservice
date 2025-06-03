@@ -18,12 +18,6 @@ pipeline {
             }
         }
 
-        stage('Build JAR with Maven') {
-            steps {
-                sh 'mvn clean install'
-            }
-        }
-
         stage('Build Docker Image') {
             steps {
                 sh """
