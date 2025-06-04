@@ -36,13 +36,13 @@ pipeline {
 
         stage('Publish') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'paupulpeg', passwordVariable: 'Se166uS394')]) {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     sh """
-                    echo "Logging in to Docker Hub..."
-                    docker login -u="${USERNAME}" -p="${PASSWORD}"
-                    echo "Pushing images..."
-                    docker push ${DOCKER_IMAGE}:${TAG}
-                    docker push ${DOCKER_IMAGE}:latest
+                        echo "Logging in to Docker Hub..."
+                        docker login -u="${DOCKER_USER}" -p="${DOCKER_PASS}"
+                        echo "Pushing images..."
+                        docker push ${DOCKER_IMAGE}:${TAG}
+                        docker push ${DOCKER_IMAGE}:latest
                     """
                 }
             }
