@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         TAG = sh(returnStdout: true, script: 'date "+%d%m%Y-%H%M%S"').trim()
-        DOCKER_IMAGE = 'Paula1670/microservice-app'
+        DOCKER_IMAGE = 'paupulpeg/microservice-app'
     }
 
     stages {
