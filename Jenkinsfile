@@ -36,7 +36,7 @@ pipeline {
 
         stage('Publish') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'paula', passwordVariable: '12345')]) {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'paupulpeg', passwordVariable: 'Se166uS394')]) {
                     sh """
                     echo "Logging in to Docker Hub..."
                     docker login -u="${USERNAME}" -p="${PASSWORD}"
